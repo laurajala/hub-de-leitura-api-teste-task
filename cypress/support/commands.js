@@ -52,3 +52,21 @@ Cypress.Commands.add('geraToken', (email, senha) => {
             return response.body.user.id
         })
  })
+
+ Cypress.Commands.add('cadastrarLivro', (token, titulo) => {
+    cy.api({
+        method: 'POST',
+        url: 'books',
+        headers: { 'Authorization': token },
+        body: {
+            title: titulo,
+            author: 'Laura Ajala QA',
+            category: 'Tecnologia',
+            description: 'Livro criado pela automação Cypress',
+            total_copies: 3
+        }
+    }).then(response => {
+        expect(response.status).to.equal(201)
+        return response.body.book.id
+    })
+ })
