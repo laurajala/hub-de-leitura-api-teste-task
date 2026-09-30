@@ -1,5 +1,7 @@
 # Hub de Leitura API — Automação de Testes com Cypress
 
+[![API Tests](https://github.com/laurajala/hub-de-leitura-api-teste-task/actions/workflows/pipeline.yml/badge.svg)](https://github.com/laurajala/hub-de-leitura-api-teste-task/actions/workflows/pipeline.yml)
+
 Automação de testes de API da funcionalidade **Catálogo de Livros** da [Hub de Leitura API](https://github.com/EBAC-QE/hub-de-leitura-api), utilizando **Cypress** e o plugin **cypress-plugin-api**.
 
 Os testes cobrem as operações **GET, POST, PUT e DELETE**, com cenários positivos, negativos e validação de permissões por perfil de usuário.
@@ -12,6 +14,7 @@ Os testes cobrem as operações **GET, POST, PUT e DELETE**, com cenários posit
 - **cypress-plugin-api** — requisições com `cy.api()` e visualização das respostas no runner
 - **JavaScript** e **Node.js**
 - **Git e GitHub** — versionamento
+- **GitHub Actions** — integração contínua
 
 ---
 
@@ -47,6 +50,25 @@ Definidos em `cypress/support/commands.js`:
 | --- | --- |
 | `cy.geraToken(email, senha)` | Realiza login e retorna o token JWT |
 | `cy.cadastrarLivro(token, titulo)` | Cadastra um livro e retorna o ID criado, usado como massa nos testes de PUT e DELETE |
+
+---
+## Integração contínua
+
+A pipeline do GitHub Actions executa os testes a cada `push` e `pull_request` na branch `main`, em um ambiente limpo:
+
+```text
+Checkout dos testes
+      ↓
+Checkout da Hub de Leitura API (repositório da EBAC)
+      ↓
+Instalação e inicialização da API em segundo plano
+      ↓
+Aguarda a API responder em localhost:3000
+      ↓
+Executa os testes do Catálogo de Livros
+```
+
+Dessa forma, os testes não dependem de um ambiente externo: a própria pipeline sobe a API antes da execução.
 
 ---
 
