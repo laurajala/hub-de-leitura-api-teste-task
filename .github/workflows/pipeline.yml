@@ -1,0 +1,53 @@
+name: API Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    name: Cypress API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout dos testes
+        uses: actions/checkout@v7
+
+      - name: Checkout da Hub de Leitura API
+        uses: actions/checkout@v7
+        with:
+          repository: EBAC-QE/hub-de-leitura-api
+          path: hub-de-leitura-api
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            hub-de-leitura-api/package-lock.json
+
+      - name: Instalar dependências da API
+        working-directory: hub-de-leitura-api
+        run: npm ci
+
+      - name: Iniciar a API em segundo plano
+        working-directory: hub-de-leitura-api
+        run: npm start &
+
+      - name: Instalar dependências dos testes
+        run: npm ci
+
+      - name: Aguardar a API responder
+        run: npx --yes wait-on http://localhost:3000 --timeout 60000
+
+      - name: Executar testes do Catálogo de Livros
+        run: npx cypress run --spec cypress/e2e/exercicio.cy.js
